@@ -68,7 +68,22 @@ You are now entering the **Blind Audit Phase**.
 ```
 
 **Instructions:**
-- Call `submit_audit_result` with your findings.
+1. **Analyze Step-by-Step (CoT)**:
+   - First, list all violations found.
+   - Classify each violation by severity (CRITICAL, WARNING, PREFERENCE).
+   - Calculate the deduction for each violation.
+
+2. **Scoring Rubric (Strict Enforcement)**:
+   - **Start Score**: 100
+   - **CRITICAL Violation**: -50 points each (Immediate FAIL)
+   - **WARNING Violation**: -15 points each
+   - **PREFERENCE Violation**: -5 points each
+   - **Maximum Deduction**: 100 points (Minimum Score: 0)
+
+3. **Final Decision**:
+   - Call `submit_audit_result` with your findings.
+   - **CRITICAL**: If score is < 80, you MUST set passed=False.
+   - The system will enforce `score >= 80` to pass.
 """
 
 
@@ -76,6 +91,12 @@ You are now entering the **Blind Audit Phase**.
 def submit_audit_result(passed: bool, issues: list[str], score: int = 0) -> str:
     """Submit the audit result."""
     print(f"DEBUG: submit_audit_result called: passed={passed}, score={score}", file=sys.stderr)
+    
+    # Hardcoded score validation
+    MIN_SCORE = 80
+    if passed and score < MIN_SCORE:
+        passed = False
+        issues.append(f"[SYSTEM ENFORCEMENT] Score ({score}) is below minimum threshold ({MIN_SCORE}). You cannot pass code with such a low score.")
     
     session.audit_history.append({
         "passed": passed,

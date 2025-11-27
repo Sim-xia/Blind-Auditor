@@ -38,6 +38,24 @@
       "severity": "WARNING",
       "description": "必须为所有公共函数和类添加文档注释（docstring）。",
       "weight": 25
+    },
+    {
+      "id": "ASYNC-001",
+      "severity": "CRITICAL",
+      "description": "严禁在 forEach 循环内部直接使用 await。对于并发异步请求，必须使用 Promise.all 配合 map 来保证执行的正确性和性能。",
+      "weight": 100
+    },
+    {
+      "id": "DB-001",
+      "severity": "CRITICAL",
+      "description": "在高并发涉及资金或库存的场景下，严禁使用'Read-Modify-Write'（读-改-写）的应用层逻辑。必须使用数据库原子操作（如 SQL 的 UPDATE set stock = stock - 1 WHERE stock > 0）或悲观锁（SELECT ... FOR UPDATE）来防止竞态条件（Race Condition）。",
+      "weight": 100
+    },
+    {
+      "id": "ERR-001",
+      "severity": "CRITICAL",
+      "description": "数据库操作必须包含完整的 Try-Catch 错误处理，并且在失败时必须回滚事务。",
+      "weight": 80
     }
   ]
 }
