@@ -1,63 +1,109 @@
 # 🛡️ Blind Auditor - MCP Server
 
-一个基于 MCP 协议的代码自动审计工具，通过"思维隔离"强制 AI Agent 在生成代码后进行自我审查。
+> **"Code drunk, audit sober."** — *The Philosophy of Blind Auditor*
 
-#### WARN: 这个项目处于非常早期的开发阶段，所以稳定性和功能性可能欠佳
+Blind Auditor is a **mandatory code auditing system** built on the MCP (Model Context Protocol). It uses a unique **"Thinking Isolation"** mechanism to force AI Agents to enter an independent "audit phase" and self-review their code before outputting the final result.
 
-## 🎯 核心特性
+## 🧠 Core Philosophy: Thinking Isolation
 
-- **零成本**: 复用宿主 IDE 的推理模型，无需额外 API Key
-- **去偏见**: 通过 Prompt 注入强制 Agent 切换"审计员"角色
-- **强合规**: 将团队代码规范（`rules.json`）硬性植入生成流程
-- **自动循环**: 审计失败时自动触发代码修正，最多重试 3 次
-- **强执行性**: 当使用此MCP时，MCP规则拥有比对话提示词的绝对更高优先级
+Traditional AI coding is often "generate and output," which allows errors and biases to slip through. Blind Auditor introduces a middle layer:
 
-## 🚀 快速开始
+1.  **Intercept**: When the Agent wants to output code, it must first submit it to Blind Auditor.
+2.  **Isolate**: Blind Auditor does not return the result immediately. Instead, it injects a **mandatory system instruction**, forcing the Agent to pause its current persona and switch to a "Ruthless Auditor" role.
+3.  **Audit**: In this isolated context, the Agent must scan the generated code line by line against the predefined `rules.json`.
+4.  **Release**: The code is unlocked and returned to the user only when the audit score meets the threshold (default > 80) and there are no Critical issues.
 
-### 1. 安装依赖
+## 🎯 Key Features
+
+- **🛡️ Zero Trust Architecture**: Default distrust of the Agent's initial draft; it must pass an audit.
+- **💰 Zero Extra Cost**: Reuses the host IDE's current session model, requiring no additional API Key.
+- **⚖️ Bias Removal**: Forces a perspective switch via Prompt injection to break generation inertia.
+- **📏 Strict Compliance**: Hard-codes team code standards (`rules.json`) into the generation process, which is more effective than simple Prompts.
+- **🔄 Auto-Fix Loop**: Automatically triggers a "fix-resubmit" loop upon audit failure until compliance is met or the maximum retry count is reached.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Prerequisites
+
+This project uses `uv` for dependency management (pip is also supported).
 
 ```bash
+# Enter project directory
 cd blind-auditor
+
+# Install dependencies
 uv sync
+# Or
+pip install -r requirements.txt
 ```
 
-### 2. 配置规则
+### 2. Configure Audit Rules (`rules.json`)
 
-编辑 `rules.json` 文件，定义您的审计规则：
+Create or edit `rules.json` in the project root. This is the auditor's "Rulebook".
 
 ```json
 {
-  "project_name": "MyProject",
+  "project_name": "MyCoreProject",
   "strict_mode": true,
   "max_retries": 3,
   "rules": [
     {
       "id": "SEC-001",
       "severity": "CRITICAL",
-      "description": "严禁硬编码 API Key 或密码"
+      "description": "Strictly prohibit hardcoding any API Keys, passwords, or sensitive Tokens.",
+      "weight": 50
+    },
+    {
+      "id": "PERF-001",
+      "severity": "WARNING",
+      "description": "Avoid database queries or IO operations inside loops.",
+      "weight": 15
+    },
+    {
+      "id": "STYLE-001",
+      "severity": "PREFERENCE",
+      "description": "Use snake_case for variable names.",
+      "weight": 5
     }
   ]
 }
 ```
 
-### 3. 配置 IDE
+**Configuration Fields**:
+- `severity`:
+    - `CRITICAL`: Fatal error. If found, the audit fails immediately. Usually carries a high penalty.
+    - `WARNING`: Warning. Moderate penalty; accumulation can lead to failure.
+    - `PREFERENCE`: Style preference. Low penalty.
+- `weight`: The penalty points deducted when this rule is violated (Total score: 100).
 
-#### Antigravity / Cursor
+### 3. Configure IDE (Antigravity / Cursor / Windsurf)
 
-在项目根目录创建 `.cursorrules` 或在 IDE 设置中添加 System Prompt：
+#### Step A: Add System Prompt (Critical)
+
+To ensure the Agent knows it must use this tool, add the following instruction to your `.cursorrules` or IDE System Prompt settings:
 
 ```markdown
-**Critical Instruction**:
-Whenever you generate code for a user request, you MUST NOT output it directly.
-You MUST interact with the `Blind Auditor` MCP tool:
-1. Generate the code internally.
-2. Call `submit_draft` with the code.
-3. Follow the instructions returned by the tool strictly.
+# Blind Auditor Protocol
+**CRITICAL INSTRUCTION**:
+You are integrated with the **Blind Auditor MCP**.
+Whenever you generate code for a user request, you **MUST NOT** output the code block directly to the user.
+
+**Execution Protocol**:
+1.  **Draft**: Generate the code internally in your thought process.
+2.  **Submit**: Call the `submit_draft` tool with your code and language.
+3.  **Obey**: The tool will return a strict "Audit Instruction". You MUST follow it exactly to audit your own code.
+4.  **Finalize**: Only when the tool returns "✅ AUDIT PASSED" can you display the final code to the user.
+
+**Prohibited**:
+- Do NOT output code blocks before passing the audit.
+- Do NOT skip the audit step for "simple" changes.
 ```
 
-#### MCP 服务器配置
+#### Step B: Configure MCP Server
 
-在 MCP 客户端配置文件中添加：
+Add the following to your MCP client configuration file (e.g., `claude_desktop_config.json` or IDE settings):
 
 ```json
 {
@@ -65,83 +111,84 @@ You MUST interact with the `Blind Auditor` MCP tool:
     "blind-auditor": {
       "command": "python",
       "args": ["-m", "src.main"],
-      "cwd": "/path/to/blind-auditor"
+      "cwd": "/absolute/path/to/blind-auditor"
     }
   }
 }
 ```
 
-## 🔧 工具说明
+---
 
-### `submit_draft`
+## 🔧 Tool Details
 
-提交代码草稿进行审计。
+### 1. `submit_draft`
+Submit a code draft.
+- **Input**: `code` (content), `language` (programming language)
+- **Behavior**: Locks the session and returns mandatory audit instructions.
 
-**参数**:
-- `code` (str): 完整的代码内容
-- `language` (str): 编程语言，如 `python`, `typescript`
+### 2. `submit_audit_result`
+Submit your audit conclusion.
+- **Input**:
+    - `passed` (bool): Whether you believe it passed.
+    - `issues` (list): List of issues found.
+    - `score` (int): Score from 0-100.
+- **Behavior**:
+    - If `score < 80`, forces `passed=False`.
+    - If passed, unlocks the code.
+    - If failed, increments retry count and requires the Agent to fix and resubmit.
 
-**返回**: 审计指令或熔断放行
+### 3. `reset_session`
+Resets the state and clears the retry count.
 
-### `submit_audit_result`
+---
 
-提交审计结果。
-
-**参数**:
-- `passed` (bool): 是否通过审计
-- `issues` (list[str]): 发现的问题列表
-- `score` (int): 质量评分 (0-100)
-
-**返回**: 放行代码或修复指令
-
-### `reset_session`
-
-重置当前审计会话。
-
-## 🔁 工作流程
+## 🔁 Workflow Diagram
 
 ```mermaid
 graph TD
-    A[Agent 生成代码] --> B[调用 submit_draft]
-    B --> C{检查重试次数}
-    C -->|超限| D[强制放行]
-    C -->|未超限| E[进入审计模式]
-    E --> F[Agent 审查代码]
-    F --> G[调用 submit_audit_result]
-    G --> H{审计结果}
-    H -->|通过| I[放行代码]
-    H -->|失败| J[重试计数+1]
-    J --> K[返回修复指令]
-    K --> A
+    User[User Request] --> Agent
+    Agent[Agent Generates Draft] -->|1. submit_draft| MCP
+    MCP -->|2. Inject Audit Instructions| Agent
+    
+    subgraph "Thinking Isolation"
+        Agent -->|3. Self-Review| Agent
+        Agent -->|4. submit_audit_result| MCP
+    end
+    
+    MCP -->|5. Verdict| Decision{Passed?}
+    
+    Decision -->|No (Issues Found)| Retry[Retry Count +1]
+    Retry -->|Limit Not Reached| Fix[Agent Fixes Code]
+    Fix -->|Resubmit| Agent
+    
+    Decision -->|Yes (Score >= 80)| Final[✅ Output Final Code]
+    
+    Retry -->|Limit Reached| Force[⚠️ Force Output (With Warning)]
 ```
 
-## 📝 规则配置
+## ❓ Troubleshooting
 
-### 严重等级
+**Q: The Agent always outputs code directly without calling tools.**
+A: Check if the System Prompt is configured correctly. You must explicitly tell the Agent "Do NOT output code directly". You can also manually remind it in the chat: "Please audit via Blind Auditor first".
 
-- **CRITICAL**: 阻断性问题（如安全漏洞）
-- **WARNING**: 警告性问题（如代码质量）
-- **PREFERENCE**: 偏好性问题（如代码风格）
+**Q: Why does it fail even if I give the code 100 points?**
+A: Check if any `CRITICAL` rules in `rules.json` were triggered. Current logic mainly relies on the `score` passed by the Agent, but if `passed` is `True` while `score < 80`, the system will force a rejection.
 
-### 权重系统
+**Q: Which programming languages are supported?**
+A: Theoretically, all languages are supported. Blind Auditor itself does not parse code syntax but relies on the Agent's understanding to match descriptions in `rules.json`.
 
-`weight` 字段用于计算综合评分，范围 0-100。
+---
 
-## 🛠️ 开发
-
-### 运行 MCP 服务器
+## 🛠️ Development Guide
 
 ```bash
+# Run server
 python -m src.main
+
+# Debug mode (output to stderr)
+# View print statements in src/main.py
 ```
 
-### 测试
-
-```bash
-# 使用 MCP Inspector 测试
-npx @anthropic-ai/mcp-inspector python -m src.main
-```
-
-## 📄 许可证
+## 📄 License
 
 MIT License
