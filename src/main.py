@@ -38,6 +38,103 @@ except Exception as e:
     print(f"DEBUG: Failed to load rules.json: {e}", file=sys.stderr)
 
 
+def _generate_detailed_report(audit_history: list, code: str, language: str, max_retries: int) -> str:
+    """Generate detailed audit report when retry limit is reached."""
+    
+    # Calculate statistics
+    total_attempts = len(audit_history)
+    if total_attempts == 0:
+        avg_score = 0.0
+    else:
+        avg_score = sum([h["score"] for h in audit_history]) / float(total_attempts)
+    
+    # Collect all issues by category
+    critical_issues = []
+    warning_issues = []
+    preference_issues = []
+    other_issues = []
+    
+    for history_entry in audit_history:
+        for issue in history_entry["issues"]:
+            issue_upper = issue.upper()
+            if "CRITICAL" in issue_upper:
+                critical_issues.append(issue)
+            elif "WARNING" in issue_upper:
+                warning_issues.append(issue)
+            elif "PREFERENCE" in issue_upper:
+                preference_issues.append(issue)
+            else:
+                other_issues.append(issue)
+    
+    # Build report
+    report_parts = [
+        "🚨 **AUDIT LIMIT EXCEEDED - CODE REJECTED**",
+        "",
+        f"You have reached the maximum retry limit ({max_retries} attempts).",
+        "**The code has NOT been approved and cannot be modified further.**",
+        "",
+        "## 📊 Audit Summary",
+        f"- **Total Attempts**: {total_attempts}",
+        f"- **Average Score**: {avg_score:.1f}/100",
+        f"- **Status**: REJECTED",
+        "",
+        "## 📝 Detailed Audit History",
+    ]
+    
+    # Add each audit attempt
+    for i, history_entry in enumerate(audit_history, 1):
+        report_parts.append(f"\n### Attempt {i}")
+        report_parts.append(f"- **Score**: {history_entry['score']}/100")
+        report_parts.append(f"- **Result**: {'PASSED' if history_entry['passed'] else 'FAILED'}")
+        if history_entry["issues"]:
+            report_parts.append("- **Issues**:")
+            for issue in history_entry["issues"]:
+                report_parts.append(f"  - {issue}")
+    
+    # Add issue categorization
+    report_parts.extend([
+        "",
+        "## 🔍 Issue Categorization",
+    ])
+    
+    if critical_issues:
+        report_parts.append(f"\n### ⛔ CRITICAL Issues ({len(critical_issues)})")
+        for issue in critical_issues:
+            report_parts.append(f"- {issue}")
+    
+    if warning_issues:
+        report_parts.append(f"\n### ⚠️ WARNING Issues ({len(warning_issues)})")
+        for issue in warning_issues:
+            report_parts.append(f"- {issue}")
+    
+    if preference_issues:
+        report_parts.append(f"\n### 💡 PREFERENCE Issues ({len(preference_issues)})")
+        for issue in preference_issues:
+            report_parts.append(f"- {issue}")
+    
+    if other_issues:
+        report_parts.append(f"\n### 📌 Other Issues ({len(other_issues)})")
+        for issue in other_issues:
+            report_parts.append(f"- {issue}")
+    
+    # Add recommendations
+    report_parts.extend([
+        "",
+        "## 💡 Recommendations",
+        "1. Review all CRITICAL issues first - these cause immediate failures",
+        "2. Address WARNING issues to improve code quality",
+        "3. Consider PREFERENCE issues for best practices",
+        "4. Reset the session with `reset_session()` to start a new audit",
+        "",
+        "## 📄 Submitted Code",
+        f"```{language}",
+        code,
+        "```",
+    ])
+    
+    return "\n".join(report_parts)
+
+
 @mcp.tool()
 def submit_draft(code: str, language: str = "python") -> str:
     """Submit a code draft for audit."""
@@ -47,9 +144,10 @@ def submit_draft(code: str, language: str = "python") -> str:
     
     max_retries = rules_loader.get_max_retries()
     
+    # CHANGED: Generate detailed report instead of auto-approving
     if session.retry_count >= max_retries:
-        session.status = "APPROVED"
-        return f"⚠️ RETRY LIMIT REACHED\n\nCode:\n```{language}\n{code}\n```"
+        session.status = "LIMIT_EXCEEDED"
+        return _generate_detailed_report(session.audit_history, code, language, max_retries)
     
     rules_formatted = rules_loader.format_rules_for_prompt()
     

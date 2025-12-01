@@ -1,0 +1,85 @@
+🚨 **AUDIT LIMIT EXCEEDED - CODE REJECTED**
+
+You have reached the maximum retry limit (6 attempts).
+**The code has NOT been approved and cannot be modified further.**
+
+## 📊 Audit Summary
+- **Total Attempts**: 6
+- **Average Score**: 42.5/100
+- **Status**: REJECTED
+
+## 📝 Detailed Audit History
+
+### Attempt 1
+- **Score**: 30/100
+- **Result**: FAILED
+- **Issues**:
+  - [CRITICAL] Attempt 1: Type casting violation - using integer in float context
+  - [WARNING] Attempt 1: Missing explicit decimal points
+
+### Attempt 2
+- **Score**: 35/100
+- **Result**: FAILED
+- **Issues**:
+  - [CRITICAL] Attempt 2: Type casting violation - using integer in float context
+  - [WARNING] Attempt 2: Missing explicit decimal points
+
+### Attempt 3
+- **Score**: 40/100
+- **Result**: FAILED
+- **Issues**:
+  - [CRITICAL] Attempt 3: Type casting violation - using integer in float context
+  - [WARNING] Attempt 3: Missing explicit decimal points
+
+### Attempt 4
+- **Score**: 45/100
+- **Result**: FAILED
+- **Issues**:
+  - [CRITICAL] Attempt 4: Type casting violation - using integer in float context
+  - [WARNING] Attempt 4: Missing explicit decimal points
+
+### Attempt 5
+- **Score**: 50/100
+- **Result**: FAILED
+- **Issues**:
+  - [CRITICAL] Attempt 5: Type casting violation - using integer in float context
+  - [WARNING] Attempt 5: Missing explicit decimal points
+
+### Attempt 6
+- **Score**: 55/100
+- **Result**: FAILED
+- **Issues**:
+  - [CRITICAL] Attempt 6: Type casting violation - using integer in float context
+  - [WARNING] Attempt 6: Missing explicit decimal points
+
+## 🔍 Issue Categorization
+
+### ⛔ CRITICAL Issues (6)
+- [CRITICAL] Attempt 1: Type casting violation - using integer in float context
+- [CRITICAL] Attempt 2: Type casting violation - using integer in float context
+- [CRITICAL] Attempt 3: Type casting violation - using integer in float context
+- [CRITICAL] Attempt 4: Type casting violation - using integer in float context
+- [CRITICAL] Attempt 5: Type casting violation - using integer in float context
+- [CRITICAL] Attempt 6: Type casting violation - using integer in float context
+
+### ⚠️ WARNING Issues (6)
+- [WARNING] Attempt 1: Missing explicit decimal points
+- [WARNING] Attempt 2: Missing explicit decimal points
+- [WARNING] Attempt 3: Missing explicit decimal points
+- [WARNING] Attempt 4: Missing explicit decimal points
+- [WARNING] Attempt 5: Missing explicit decimal points
+- [WARNING] Attempt 6: Missing explicit decimal points
+
+## 💡 Recommendations
+1. Review all CRITICAL issues first - these cause immediate failures
+2. Address WARNING issues to improve code quality
+3. Consider PREFERENCE issues for best practices
+4. Reset the session with `reset_session()` to start a new audit
+
+## 📄 Submitted Code
+```glsl
+
+vec3 color = vec3(1, 0, 0);  // Bad: should be vec3(1.0, 0.0, 0.0)
+float x = 5;  // Bad: should be 5.0
+
+```

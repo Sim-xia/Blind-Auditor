@@ -14,7 +14,7 @@ class SessionState:
     current_code: Optional[str] = None
     retry_count: int = 0
     audit_history: list = field(default_factory=list)
-    status: str = "IDLE"  # IDLE | AUDITING | APPROVED
+    status: str = "IDLE"  # IDLE | AUDITING | APPROVED | LIMIT_EXCEEDED
     
     def reset(self):
         """Reset the session state."""
