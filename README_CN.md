@@ -157,13 +157,13 @@ graph TD
     
     MCP -->|5. 判定结果| Decision{"通过?"}
     
-    Decision -->|否 (发现问题)| Retry["重试计数 +1"]
+    Decision -->|否 - 发现问题| Retry["重试计数 +1"]
     Retry -->|未超限| Fix["智能体修复代码"]
     Fix -->|再次提交| Agent
     
-    Decision -->|是 (评分 >= 80)| Final["✅ 输出最终代码"]
+    Decision -->|是 - 评分 >= 80| Final["✅ 输出最终代码"]
     
-    Retry -->|已超限| Force["⚠️ Force Output (With Warning)"]
+    Retry -->|已超限| Force["⚠️ 强制输出 - 带警告"]
 ```
 
 ## ❓ 常见问题排查 (Troubleshooting)

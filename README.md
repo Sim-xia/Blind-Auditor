@@ -157,13 +157,13 @@ graph TD
     
     MCP -->|5. Verdict| Decision{"Passed?"}
     
-    Decision -->|No (Issues Found)| Retry["Retry Count +1"]
+    Decision -->|No - Issues Found| Retry["Retry Count +1"]
     Retry -->|Limit Not Reached| Fix["Agent Fixes Code"]
     Fix -->|Resubmit| Agent
     
-    Decision -->|Yes (Score >= 80)| Final["✅ Output Final Code"]
+    Decision -->|Yes - Score >= 80| Final["✅ Output Final Code"]
     
-    Retry -->|Limit Reached| Force["⚠️ Force Output (With Warning)"]
+    Retry -->|Limit Reached| Force["⚠️ Force Output - With Warning"]
 ```
 
 ## ❓ Troubleshooting
