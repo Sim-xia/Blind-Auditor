@@ -2,5 +2,18 @@
   "project_name": "BlindAuditor",
   "strict_mode": true,
   "max_retries": 3,
-  "rules": []
+  "rules": [
+    {
+      "id": "SEC-001",
+      "severity": "CRITICAL",
+      "description": "严禁在代码中硬编码任何 API Key、密码或敏感 Token",
+      "weight": 50
+    },
+    {
+      "id": "PERF-001",
+      "severity": "WARNING",
+      "description": "避免在循环中进行数据库查询、IO 操作或网络请求",
+      "weight": 15
+    }
+  ]
 }

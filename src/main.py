@@ -213,12 +213,116 @@ def submit_audit_result(passed: bool, issues: list[str], score: int = 0) -> str:
         return f"❌ AUDIT FAILED (Score: {score}/100)\n\n**Issues:**\n{issues_formatted}\n\nRetry count: {session.retry_count}/{rules_loader.get_max_retries()}"
 
 
+
 @mcp.tool()
 def reset_session() -> str:
-    """Reset the current audit session."""
-    print("DEBUG: reset_session called", file=sys.stderr)
-    session.reset()
-    return "✅ Session reset successfully."
+	"""Reset the current audit session."""
+	print("DEBUG: reset_session called", file=sys.stderr)
+	session.reset()
+	return "✅ Session reset successfully."
+
+
+@mcp.tool()
+def update_rules(
+	action: str,
+	rule_id: str = "",
+	severity: str = "",
+	description: str = "",
+	weight: int = 0
+) -> str:
+	"""
+	Update audit rules configuration.
+	
+	Args:
+		action: Operation to perform - "add", "remove", "update", or "list"
+		rule_id: Rule identifier (required for add/remove/update)
+		severity: Rule severity level - "CRITICAL", "WARNING", or "PREFERENCE" (for add/update)
+		description: Rule description (for add/update)
+		weight: Point deduction weight 0-100 (for add/update)
+	
+	Returns:
+		Status message with operation result
+	
+	Examples:
+		# List all rules
+		update_rules(action="list")
+		
+		# Add a new rule
+		update_rules(
+			action="add",
+			rule_id="SEC-001",
+			severity="CRITICAL",
+			description="No hardcoded API keys",
+			weight=50
+		)
+		
+		# Remove a rule
+		update_rules(action="remove", rule_id="SEC-001")
+		
+		# Update a rule
+		update_rules(
+			action="update",
+			rule_id="SEC-001",
+			description="Updated description"
+		)
+	"""
+	print(f"DEBUG: update_rules called with action={action}, rule_id={rule_id}", file=sys.stderr)
+	
+	# Reload rules to get latest state
+	rules_loader.load()
+	
+	# Handle list action
+	if action == "list":
+		return rules_loader.list_rules()
+	
+	# Validate rule_id for non-list actions
+	if not rule_id:
+		return "❌ Error: rule_id is required for add/remove/update actions."
+	
+	# Handle add action
+	if action == "add":
+		if not severity or not description:
+			return "❌ Error: severity and description are required for adding a rule."
+		
+		result = rules_loader.add_rule(rule_id, severity, description, weight)
+		
+		if result["status"] == "success":
+			return f"✅ {result['message']}\n\n{rules_loader.list_rules()}"
+		else:
+			return f"❌ {result['message']}"
+	
+	# Handle remove action
+	elif action == "remove":
+		result = rules_loader.remove_rule(rule_id)
+		
+		if result["status"] == "success":
+			return f"✅ {result['message']}\n\n{rules_loader.list_rules()}"
+		else:
+			return f"❌ {result['message']}"
+	
+	# Handle update action
+	elif action == "update":
+		# Only pass non-empty values
+		update_kwargs = {}
+		if severity:
+			update_kwargs["severity"] = severity
+		if description:
+			update_kwargs["description"] = description
+		if weight > 0:
+			update_kwargs["weight"] = weight
+		
+		if not update_kwargs:
+			return "❌ Error: At least one field (severity, description, or weight) must be provided for update."
+		
+		result = rules_loader.update_rule(rule_id, **update_kwargs)
+		
+		if result["status"] == "success":
+			return f"✅ {result['message']}\n\n{rules_loader.list_rules()}"
+		else:
+			return f"❌ {result['message']}"
+	
+	else:
+		return f"❌ Error: Invalid action '{action}'. Must be one of: add, remove, update, list"
 
 
 if __name__ == "__main__":
