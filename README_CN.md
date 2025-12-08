@@ -27,15 +27,22 @@ Blind Auditor 是一个基于 MCP (Model Context Protocol) 协议构建的**强�
 
 ### 1. 环境准备
 
-本项目使用 `uv` 进行依赖管理（也可以使用 pip）。
+本项目需要 Python 3.8 或更高版本。
 
 ```bash
 # 进入项目目录
 cd blind-auditor
 
+# 创建虚拟环境（推荐）
+python -m venv .venv
+
+# 激活虚拟环境
+# macOS/Linux:
+source .venv/bin/activate
+# Windows:
+# .venv\Scripts\activate
+
 # 安装依赖
-uv sync
-# 或者
 pip install -r requirements.txt
 ```
 

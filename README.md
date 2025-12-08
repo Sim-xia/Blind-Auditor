@@ -27,15 +27,22 @@ Traditional AI coding is often "generate and output," which allows errors and bi
 
 ### 1. Prerequisites
 
-This project uses `uv` for dependency management (pip is also supported).
+This project requires Python 3.8 or higher.
 
 ```bash
 # Enter project directory
 cd blind-auditor
 
+# Create virtual environment (recommended)
+python -m venv .venv
+
+# Activate virtual environment
+# On macOS/Linux:
+source .venv/bin/activate
+# On Windows:
+# .venv\Scripts\activate
+
 # Install dependencies
-uv sync
-# Or
 pip install -r requirements.txt
 ```
 
