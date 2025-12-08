@@ -112,13 +112,15 @@ Whenever you generate code for a user request, you **MUST NOT** output the code 
 
 Add the following to your MCP client configuration file (e.g., `claude_desktop_config.json` or IDE settings):
 
+**Note**: Replace `/path/to/your/blind-auditor` with the actual absolute path where you cloned this repository.
+
 ```json
 {
   "mcpServers": {
     "blind-auditor": {
       "command": "python",
       "args": ["-m", "src.main"],
-      "cwd": "/absolute/path/to/blind-auditor"
+      "cwd": "/path/to/your/blind-auditor"
     }
   }
 }

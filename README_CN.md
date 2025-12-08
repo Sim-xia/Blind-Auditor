@@ -112,13 +112,15 @@ Whenever you generate code for a user request, you **MUST NOT** output the code 
 
 在您的 MCP 客户端配置文件 (如 `claude_desktop_config.json` 或 IDE 设置) 中添加：
 
+**注意**：请将 `/path/to/your/blind-auditor` 替换为您克隆此仓库的实际绝对路径。
+
 ```json
 {
   "mcpServers": {
     "blind-auditor": {
       "command": "python",
       "args": ["-m", "src.main"],
-      "cwd": "/绝对路径/指向/blind-auditor"
+      "cwd": "/path/to/your/blind-auditor"
     }
   }
 }

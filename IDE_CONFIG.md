@@ -34,12 +34,9 @@
 {
   "mcpServers": {
     "blind-auditor": {
-      "command": "uv",
-      "args": ["run", "python", "-m", "src.main"],
-      "cwd": "/Users/xhldemac/BlindAuditor/blind-auditor",
-      "env": {
-        "PYTHONPATH": "/Users/xhldemac/BlindAuditor/blind-auditor"
-      }
+      "command": "python",
+      "args": ["-m", "src.main"],
+      "cwd": "/path/to/your/blind-auditor"
     }
   }
 }
@@ -53,9 +50,9 @@
 {
   "mcpServers": {
     "blind-auditor": {
-      "command": "uv",
-      "args": ["run", "python", "-m", "src.main"],
-      "cwd": "/Users/xhldemac/BlindAuditor/blind-auditor"
+      "command": "python",
+      "args": ["-m", "src.main"],
+      "cwd": "/path/to/your/blind-auditor"
     }
   }
 }
@@ -72,7 +69,7 @@ TBD（待 Windsurf 发布 MCP 支持）
 1. 重启 IDE
 2. 在终端运行 MCP Inspector：
    ```bash
-   npx @anthropic-ai/mcp-inspector uv run python -m src.main
+   npx @anthropic-ai/mcp-inspector python -m src.main
    ```
 3. 确认工具列表中有：
    - `submit_draft`
