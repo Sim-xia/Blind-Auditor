@@ -1,6 +1,6 @@
 # 🛡️ Blind Auditor - MCP Server
 
-> **"Code drunk, audit sober."** — *The Philosophy of Blind Auditor*
+"Code -> audit -> amend -> audit again -> pass."
 
 Blind Auditor is a **mandatory code auditing system** built on the MCP (Model Context Protocol). It uses a unique **"Thinking Isolation"** mechanism to force AI Agents to enter an independent "audit phase" and self-review their code before outputting the final result.
 

@@ -1,6 +1,7 @@
 # 🛡️ Blind Auditor - MCP 服务器
 
-> **"Code drunk, audit sober."** — *Blind Auditor 哲学*
+"编程 -> 审计 -> 修复 -> 再次审计 -> 通过."
+
 
 Blind Auditor 是一个基于 MCP (Model Context Protocol) 协议构建的**强制性代码审计系统**。它通过独创的**"思维隔离" (Thinking Isolation)** 机制，强制 AI 智能体 (Agent) 在输出最终代码前，必须先进入一个独立的"审计时空"进行自我审查。
 
