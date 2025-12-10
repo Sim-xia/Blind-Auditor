@@ -44,15 +44,14 @@ cd
 {
   "mcpServers": {
     "blind-auditor": {
-      "command": "python",
-      "args": ["-m", "src.main"],
-      "cwd": "/Users/yourname/projects/blind-auditor"
+      "command": "uv",
+      "args": ["run", "--directory", "/Users/yourname/projects/blind-auditor", "blind-auditor"]
     }
   }
 }
 ```
 
-**注意**: 将 `cwd` 的值替换为您在上一步获取的实际路径。
+**注意**: 将 `--directory` 后的路径替换为您在上一步获取的实际路径。
 
 ---
 
@@ -65,9 +64,8 @@ cd
 {
   "mcpServers": {
     "blind-auditor": {
-      "command": "python",
-      "args": ["-m", "src.main"],
-      "cwd": "/Users/yourname/projects/blind-auditor"
+      "command": "uv",
+      "args": ["run", "--directory", "/Users/yourname/projects/blind-auditor", "blind-auditor"]
     }
   }
 }
@@ -86,9 +84,8 @@ cd
 {
   "mcpServers": {
     "blind-auditor": {
-      "command": "python",
-      "args": ["-m", "src.main"],
-      "cwd": "/Users/yourname/projects/blind-auditor"
+      "command": "uv",
+      "args": ["run", "--directory", "/Users/yourname/projects/blind-auditor", "blind-auditor"]
     }
   }
 }
@@ -98,7 +95,19 @@ cd
 
 ### 4. Windsurf
 
-**位置**: TBD（待 Windsurf 发布 MCP 支持）
+**位置**: `~/.codeium/windsurf/mcp_config.json`
+
+**配置**:
+```json
+{
+  "mcpServers": {
+    "blind-auditor": {
+      "command": "uv",
+      "args": ["run", "--directory", "/Users/yourname/projects/blind-auditor", "blind-auditor"]
+    }
+  }
+}
+```
 
 ---
 
@@ -110,12 +119,8 @@ cd
 # 进入项目目录
 cd /path/to/your/blind-auditor
 
-# 激活虚拟环境（如果使用）
-source .venv/bin/activate  # macOS/Linux
-# .venv\Scripts\activate   # Windows
-
 # 运行 Inspector
-npx @anthropic-ai/mcp-inspector python -m src.main
+npx @anthropic-ai/mcp-inspector uv run blind-auditor
 ```
 
 您应该看到以下工具：
@@ -128,7 +133,7 @@ npx @anthropic-ai/mcp-inspector python -m src.main
 
 ```bash
 cd /path/to/your/blind-auditor
-python -m src.main
+uv run blind-auditor
 ```
 
 如果看到以下输出，说明配置正确：
@@ -147,14 +152,14 @@ DEBUG: About to call mcp.run()
 
 ## ⚠️ 常见问题
 
-### 问题 1: "找不到模块 src.main"
+### 问题 1: "找不到 uv 命令"
 
-**原因**: `cwd` 路径配置错误
+**原因**: uv 未安装或未添加到 PATH
 
 **解决方案**:
-1. 检查 `cwd` 是否指向项目根目录（包含 `src/` 文件夹的目录）
-2. 确保路径是绝对路径，不是相对路径
-3. 确保路径中没有拼写错误
+1. 安装 uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+2. 重新打开终端或运行 `source ~/.bashrc` / `source ~/.zshrc`
+3. 检查 `~/.local/bin` 是否在 PATH 中
 
 ### 问题 2: "找不到 rules.json"
 
@@ -197,19 +202,18 @@ EOF
 }
 ```
 
-### 问题 4: Python 命令未找到
+### 问题 4: Python 版本不兼容
 
-**原因**: Python 未安装或未添加到 PATH
+**原因**: Python 版本低于 3.10
 
 **解决方案**:
-- 尝试使用 `python3` 替代 `python`
-- 或使用 Python 的完整路径：
-  ```json
-  {
-    "command": "/usr/bin/python3",
-    "args": ["-m", "src.main"]
-  }
-  ```
+```bash
+# 使用 uv 安装指定版本的 Python
+uv python install 3.12
+
+# 然后重新同步
+uv sync
+```
 
 ---
 
@@ -221,9 +225,8 @@ EOF
 {
   "mcpServers": {
     "blind-auditor": {
-      "command": "python",
-      "args": ["-m", "src.main"],
-      "cwd": "REPLACE_WITH_YOUR_ABSOLUTE_PATH"
+      "command": "uv",
+      "args": ["run", "--directory", "REPLACE_WITH_YOUR_ABSOLUTE_PATH", "blind-auditor"]
     }
   }
 }

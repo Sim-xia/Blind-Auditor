@@ -27,23 +27,17 @@ Blind Auditor 是一个基于 MCP (Model Context Protocol) 协议构建的**强�
 
 ### 1. 环境准备
 
-本项目需要 Python 3.8 或更高版本。
+本项目需要 Python 3.10+ 和 [uv](https://docs.astral.sh/uv/)。
 
 ```bash
+# 安装 uv（如果尚未安装）
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
 # 进入项目目录
 cd blind-auditor
 
-# 创建虚拟环境（推荐）
-python -m venv .venv
-
-# 激活虚拟环境
-# macOS/Linux:
-source .venv/bin/activate
-# Windows:
-# .venv\Scripts\activate
-
-# 安装依赖
-pip install -r requirements.txt
+# 安装依赖（自动创建虚拟环境）
+uv sync
 ```
 
 ### 2. 配置审计规则 (`rules.json`)
@@ -118,9 +112,8 @@ Whenever you generate code for a user request, you **MUST NOT** output the code 
 {
   "mcpServers": {
     "blind-auditor": {
-      "command": "python",
-      "args": ["-m", "src.main"],
-      "cwd": "/path/to/your/blind-auditor"
+      "command": "uv",
+      "args": ["run", "--directory", "/path/to/your/blind-auditor", "blind-auditor"]
     }
   }
 }
@@ -192,7 +185,10 @@ A: 理论上支持所有语言。Blind Auditor 本身不解析代码语法，而
 
 ```bash
 # 运行服务器
-python -m src.main
+uv run blind-auditor
+
+# 或直接使用 Python 模块运行
+uv run python -m src.main
 
 # 调试模式 (输出到 stderr)
 # 可以在 src/main.py 中查看 print 语句

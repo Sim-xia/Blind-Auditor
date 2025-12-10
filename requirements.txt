@@ -1,5 +1,0 @@
-# Blind Auditor - MCP Server Dependencies
-# Python >= 3.8
-
-# Core MCP dependency
-mcp[cli]>=1.22.0

@@ -2,43 +2,50 @@
 
 ## 系统要求
 
-- **Python**: 3.8 或更高版本
+- **Python**: 3.10 或更高版本
 - **操作系统**: macOS, Linux, Windows
-- **包管理器**: pip (Python 自带)
+- **包管理器**: [uv](https://docs.astral.sh/uv/) (推荐) 或 pip
 
-## 快速安装
+## 快速安装 (使用 uv)
 
-### 1. 克隆或下载项目
+### 1. 安装 uv
+
+如果尚未安装 uv，请先安装：
+
+**macOS / Linux:**
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+**Windows (PowerShell):**
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+**使用 Homebrew (macOS/Linux):**
+```bash
+brew install uv
+```
+
+### 2. 克隆或下载项目
 
 ```bash
 git clone https://github.com/your-repo/blind-auditor.git
 cd blind-auditor
 ```
 
-### 2. 创建虚拟环境（推荐）
-
-**macOS / Linux:**
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-**Windows:**
-```cmd
-python -m venv .venv
-.venv\Scripts\activate
-```
-
 ### 3. 安装依赖
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
+
+这会自动创建虚拟环境并安装所有依赖。
 
 ### 4. 验证安装
 
 ```bash
-python -m src.main --help
+uv run blind-auditor
 ```
 
 如果看到 MCP 服务器启动的调试信息，说明安装成功！
@@ -57,29 +64,31 @@ docker run -it blind-auditor
 
 ## 故障排查
 
-### 问题：找不到 Python 命令
+### 问题：找不到 uv 命令
 
 **解决方案**: 
-- 确保已安装 Python 3.8+
-- 尝试使用 `python3` 替代 `python`
+- 确保 uv 已正确安装
+- 重新打开终端或运行 `source ~/.bashrc` / `source ~/.zshrc`
+- 检查 `~/.local/bin` 是否在 PATH 中
 
-### 问题：pip 安装失败
+### 问题：Python 版本不兼容
 
 **解决方案**:
 ```bash
-# 升级 pip
-pip install --upgrade pip
+# 使用 uv 安装指定版本的 Python
+uv python install 3.12
 
-# 重新安装
-pip install -r requirements.txt
+# 然后重新同步
+uv sync
 ```
 
-### 问题：权限错误
+### 问题：依赖安装失败
 
 **解决方案**:
 ```bash
-# 使用 --user 标志
-pip install --user -r requirements.txt
+# 清除缓存并重新安装
+uv cache clean
+uv sync --refresh
 ```
 
 ## 下一步

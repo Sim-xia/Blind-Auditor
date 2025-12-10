@@ -1,12 +1,13 @@
 {
     "mcpServers": {
         "blind-auditor": {
-            "command": "python",
+            "command": "uv",
             "args": [
-                "-m",
-                "src.main"
-            ],
-            "cwd": "/path/to/your/blind-auditor"
+                "run",
+                "--directory",
+                "/path/to/your/blind-auditor",
+                "blind-auditor"
+            ]
         }
     }
 }

@@ -27,23 +27,17 @@ Traditional AI coding is often "generate and output," which allows errors and bi
 
 ### 1. Prerequisites
 
-This project requires Python 3.8 or higher.
+This project requires Python 3.10+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
 # Enter project directory
 cd blind-auditor
 
-# Create virtual environment (recommended)
-python -m venv .venv
-
-# Activate virtual environment
-# On macOS/Linux:
-source .venv/bin/activate
-# On Windows:
-# .venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies (automatically creates virtual environment)
+uv sync
 ```
 
 ### 2. Configure Audit Rules (`rules.json`)
@@ -118,9 +112,8 @@ Add the following to your MCP client configuration file (e.g., `claude_desktop_c
 {
   "mcpServers": {
     "blind-auditor": {
-      "command": "python",
-      "args": ["-m", "src.main"],
-      "cwd": "/path/to/your/blind-auditor"
+      "command": "uv",
+      "args": ["run", "--directory", "/path/to/your/blind-auditor", "blind-auditor"]
     }
   }
 }
@@ -192,7 +185,10 @@ A: Theoretically, all languages are supported. Blind Auditor itself does not par
 
 ```bash
 # Run server
-python -m src.main
+uv run blind-auditor
+
+# Or run directly with Python module
+uv run python -m src.main
 
 # Debug mode (output to stderr)
 # View print statements in src/main.py

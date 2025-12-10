@@ -325,8 +325,13 @@ def update_rules(
 		return f"❌ Error: Invalid action '{action}'. Must be one of: add, remove, update, list"
 
 
-if __name__ == "__main__":
+def main():
+    """Entry point for the MCP server."""
     print("DEBUG: About to call mcp.run()", file=sys.stderr)
     sys.stderr.flush()
     mcp.run()
     print("DEBUG: mcp.run() completed (this shouldn't print)", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()

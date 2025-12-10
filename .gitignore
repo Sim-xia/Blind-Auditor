@@ -7,4 +7,7 @@ wheels/
 *.egg-info
 
 # Virtual environments
-.venv
+.venv/
+
+# uv
+.python-version
